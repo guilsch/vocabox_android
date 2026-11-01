@@ -3,42 +3,53 @@ package com.guilsch.vocabox;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import java.util.concurrent.ExecutionException;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import life.sabujak.roundedbutton.RoundedButton;
 
 public class ActivityTranslation extends AppCompatActivity {
 
+    // ----- Vue 1 : recherche -----
     private RoundedButton OKButton;
+    private EditText item1Text;          // barre de recherche : le mot
+    private TextView item2Text;          // réponse de l'API : définitions + étymologie
+    private ImageView searchButton;
+    private ProgressBar searchProgress;
+    private ConstraintLayout backLayout;
+
+    // ----- Vue 2 : vérification de la carte -----
     private RoundedButton saveCardButton;
-
-    private ImageView targetLanguageFlag;
-    private ImageView userLanguageFlag;
-
-    private EditText item1Text;
-    private EditText item2Text;
-    private EditText item1TextCheckCardLayout;
-    private EditText item2TextCheckCardLayout;
+    private EditText item1TextCheckCardLayout;   // le mot
+    private EditText item2TextCheckCardLayout;   // définitions + étymologie (modifiable avant d'enregistrer)
     private EditText packText;
-
-    private TranslationAPI translator;
-    private String translationResult;
-    private Boolean userToTarget;
+    private ConstraintLayout backLayoutCheck;
 
     private Card newCard;
-
     private Integer currentLayoutNum;
 
-    private ConstraintLayout backLayout;
-    private ConstraintLayout backLayoutCheck;
+    // ----- Recherche -----
+    private final DictionaryRepository repository = new DictionaryRepository();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    private int searchId = 0;            // pour ignorer la réponse d'une ancienne recherche
+    private String searchedWord = "";    // dernier mot recherché
+    private String resultText = "";      // réponse de l'API pour ce mot ("" tant qu'il n'y en a pas)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,226 +57,150 @@ public class ActivityTranslation extends AppCompatActivity {
         initMainTranslationLayout();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executor.shutdownNow();
+    }
+
+    // =====================================================================
+    // Vue 1 : barre de recherche + réponse
+    // =====================================================================
+
     private void initMainTranslationLayout() {
         setContentView(R.layout.activity_translation);
+
+        currentLayoutNum = 1;
 
         backLayout = findViewById(R.id.back_layout);
         backLayout.setOnClickListener(v -> onBackPressed());
 
-        currentLayoutNum = 1;
-
         OKButton = findViewById(R.id.ok_button);
-
         item1Text = findViewById(R.id.item1_text);
         item2Text = findViewById(R.id.item2_text);
+        searchButton = findViewById(R.id.search_button);
+        searchProgress = findViewById(R.id.search_progress);
 
-        item1Text.setText("");
-        item2Text.setText("");
+        // Restaure l'état (utile quand on revient de la vue 2 avec « Back »)
+        item1Text.setText(searchedWord);
+        item2Text.setText(resultText);
 
-        targetLanguageFlag = findViewById(R.id.targetLanguageFlag);
-        userLanguageFlag = findViewById(R.id.userLanguageFlag);
+        // Lancer la recherche : loupe ou touche « Rechercher » du clavier
+        searchButton.setOnClickListener(v -> searchWord());
+        item1Text.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                searchWord();
+                return true;
+            }
+            return false;
+        });
 
-        targetLanguageFlag.setImageDrawable(Param.FLAG_ICON_TARGET);
-        userLanguageFlag.setImageDrawable(Param.FLAG_ICON_USER);
-
+        // OK : passe à la vérification de la carte (mot + réponse de l'API)
         OKButton.setOnClickListener(view -> {
+            String typedWord = item1Text.getText().toString().trim();
 
-            if (item1Text.getText().toString().isEmpty() && item2Text.getText().toString().isEmpty()) {
-                Utils.showToast(ActivityTranslation.this, getString(R.string.toast_msg_empty_translation));
-            }
-            else {
-                try {
-                    setCheckCardLayout();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            if (typedWord.isEmpty()) {
+                Utils.showToast(ActivityTranslation.this, getString(R.string.toast_msg_empty_search));
+            } else if (resultText.isEmpty() || !typedWord.equalsIgnoreCase(searchedWord)) {
+                // Pas de réponse pour ce mot : il faut d'abord lancer la recherche
+                Utils.showToast(ActivityTranslation.this, getString(R.string.toast_msg_search_first));
+            } else {
+                setCheckCardLayout();
             }
         });
-
-        item1Text.setOnTouchListener((view, motionEvent) -> onTouchItem1Side());
-        item2Text.setOnTouchListener((view, motionEvent) -> onTouchItem2Side());
-
-        item1Text.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (userToTarget && s.equals("")) {
-                    item2Text.setText("");
-                }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (userToTarget) {
-                    item2Text.setText(translate(item1Text.getText().toString()));
-                }
-            }
-        });
-
-        item2Text.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!userToTarget && s.equals("")) {
-                    item1Text.setText("");
-                }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!userToTarget) {
-                    item1Text.setText(translate(item2Text.getText().toString()));
-                }
-            }
-        });
-
-        initSides();
     }
 
-    private void setCheckCardLayout() throws ExecutionException, InterruptedException {
+    private void searchWord() {
+        final String word = item1Text.getText().toString().trim();
+
+        if (word.isEmpty()) {
+            Utils.showToast(ActivityTranslation.this, getString(R.string.toast_msg_empty_search));
+            return;
+        }
+
+        hideKeyboard();
+
+        searchedWord = word;
+        resultText = "";
+        item2Text.setText("");
+        searchProgress.setVisibility(View.VISIBLE);
+
+        final int currentSearch = ++searchId;
+
+        // Réseau + parsing sur un thread secondaire
+        executor.execute(() -> {
+            try {
+                WordEntry entry = repository.lookup(word);
+                final String text = (entry == null) ? null : formatEntry(entry);
+                mainHandler.post(() -> onSearchResult(currentSearch, word, text, false));
+            } catch (IOException e) {
+                mainHandler.post(() -> onSearchResult(currentSearch, word, null, true));
+            }
+        });
+    }
+
+    private void onSearchResult(int id, String word, String text, boolean networkError) {
+        if (id != searchId || isFinishing() || isDestroyed()) return;
+
+        if (text != null) {
+            resultText = text;
+        }
+
+        // Si l'utilisateur est déjà passé à la vue 2, rien à afficher ici
+        if (currentLayoutNum != 1) return;
+
+        searchProgress.setVisibility(View.GONE);
+
+        if (networkError) {
+            item2Text.setText(R.string.msg_search_error);
+        } else if (text == null) {
+            item2Text.setText(getString(R.string.msg_no_definition, word));
+        } else {
+            item2Text.setText(text);
+        }
+    }
+
+    /** Transforme l'entrée du dictionnaire en texte brut (réutilisé tel quel pour la carte). */
+    private String formatEntry(WordEntry entry) {
+        StringBuilder sb = new StringBuilder();
+
+        for (WordEntry.Meaning meaning : entry.meanings) {
+            if (sb.length() > 0) sb.append("\n\n");
+            sb.append(meaning.category);
+            for (int i = 0; i < meaning.definitions.size(); i++) {
+                sb.append("\n").append(i + 1).append(". ").append(meaning.definitions.get(i));
+            }
+        }
+
+        if (entry.etymology != null) {
+            if (sb.length() > 0) sb.append("\n\n");
+            sb.append(getString(R.string.label_etymology)).append("\n").append(entry.etymology);
+        }
+
+        return sb.toString();
+    }
+
+    // =====================================================================
+    // Vue 2 : vérification de la carte avant enregistrement
+    // =====================================================================
+
+    private void setCheckCardLayout() {
         setContentView(R.layout.activity_translation_check);
         currentLayoutNum = 2;
 
         item1TextCheckCardLayout = findViewById(R.id.item1_text);
         item2TextCheckCardLayout = findViewById(R.id.item2_text);
         packText = findViewById(R.id.pack_text);
-        targetLanguageFlag = findViewById(R.id.targetLanguageFlag);
-        userLanguageFlag = findViewById(R.id.userLanguageFlag);
 
+        // « Back » : retour à la recherche, avec le mot et la réponse conservés
         backLayoutCheck = findViewById(R.id.back_layout);
         backLayoutCheck.setOnClickListener(v -> initMainTranslationLayout());
-
-        targetLanguageFlag.setImageDrawable(Param.FLAG_ICON_TARGET);
-        userLanguageFlag.setImageDrawable(Param.FLAG_ICON_USER);
 
         saveCardButton = findViewById(R.id.save_card_button);
         saveCardButton.setOnClickListener(view -> saveCardButtonClick());
 
-        String item1 = item1Text.getText().toString();
-        String item2 = item2Text.getText().toString();
-
-        item1Text.setEnabled(Boolean.FALSE);
-        item2Text.setEnabled(Boolean.FALSE);
-
-        String mainTranslation = translateWaitForIt(item1, Boolean.TRUE);
-
-        System.out.println("item2 : " + item2);
-        System.out.println("translation : " + mainTranslation);
-
-        String item2WithoutWhitespace = item2.replaceAll("\\s", "");
-        String mainTranslationWithoutWhitespace = mainTranslation.replaceAll("\\s", "");
-
-        if (!item2WithoutWhitespace.equalsIgnoreCase(mainTranslationWithoutWhitespace)) {
-            item2 = mainTranslation + ", " + item2;
-        }
-
-        item1TextCheckCardLayout.setText(item1);
-        item2TextCheckCardLayout.setText(item2);
-
-    }
-
-    private Boolean initSides() {
-        userToTarget = Boolean.TRUE;
-
-        item1Text.setBackground(getResources().getDrawable(R.drawable.bg_translation_edit_text_on_touch_top));
-        item1Text.setTextColor(getResources().getColor(R.color.navy1));
-
-        item2Text.setBackground(getResources().getDrawable(R.drawable.bg_translation_edit_text_bottom));
-        item2Text.setTextColor(getResources().getColor(R.color.navy1));
-
-        System.out.println(item1Text.getCurrentTextColor());
-
-        return Boolean.FALSE;
-    }
-
-    private Boolean onTouchItem1Side() {
-        userToTarget = Boolean.TRUE;
-
-        item1Text.setBackground(getResources().getDrawable(R.drawable.bg_translation_edit_text_on_touch_top));
-        item1Text.setTextColor(getResources().getColor(R.color.navy1));
-
-        item2Text.setBackground(getResources().getDrawable(R.drawable.bg_translation_edit_text_bottom));
-        item2Text.setTextColor(getResources().getColor(R.color.navy1));
-
-        return Boolean.FALSE;
-    }
-
-    private Boolean onTouchItem2Side() {
-        userToTarget = Boolean.FALSE;
-
-        item1Text.setBackground(getResources().getDrawable(R.drawable.bg_translation_edit_text_top));
-        item1Text.setTextColor(getResources().getColor(R.color.navy1));
-
-        item2Text.setBackground(getResources().getDrawable(R.drawable.bg_translation_edit_text_on_touch_bottom));
-        item2Text.setTextColor(getResources().getColor(R.color.navy1));
-
-        return userToTarget;
-    }
-
-    public String translate(String source) {
-        translator = new TranslationAPI();
-        translator.setOnTranslationCompleteListener(new TranslationAPI.OnTranslationCompleteListener() {
-            @Override
-            public void onStartTranslation() {}
-
-            @Override
-            public void onCompleted(String text) {
-                translationResult = text;
-            }
-
-            @Override
-            public void onError(Exception e) {}
-        });
-
-        System.out.println("userToTarget : ");
-        System.out.println(userToTarget);
-
-        if (userToTarget) {
-            translator.execute(source, Param.USER_LANGUAGE_ISO, Param.TARGET_LANGUAGE_ISO);
-        }
-        else {
-            translator.execute(source, Param.TARGET_LANGUAGE_ISO, Param.USER_LANGUAGE_ISO);
-        }
-
-        return translationResult;
-
-    }
-
-    public String translateWaitForIt(String source, Boolean toTarget) throws ExecutionException, InterruptedException {
-        TranslationAPI translatorOneShot = new TranslationAPI();
-        translatorOneShot.setOnTranslationCompleteListener(new TranslationAPI.OnTranslationCompleteListener() {
-            @Override
-            public void onStartTranslation() {}
-
-            @Override
-            public void onCompleted(String text) {
-//                translationResultOneShot = text;
-            }
-
-            @Override
-            public void onError(Exception e) {}
-        }
-        );
-
-        String res;
-
-        if (toTarget) {
-            res = translatorOneShot.execute(source, Param.USER_LANGUAGE_ISO, Param.TARGET_LANGUAGE_ISO).get();
-        }
-        else {
-            res = translatorOneShot.execute(source, Param.TARGET_LANGUAGE_ISO, Param.USER_LANGUAGE_ISO).get();
-        }
-
-        return res;
-
+        item1TextCheckCardLayout.setText(searchedWord);
+        item2TextCheckCardLayout.setText(resultText);
     }
 
     public void saveCardButtonClick() {
@@ -275,7 +210,7 @@ public class ActivityTranslation extends AppCompatActivity {
         if (item1.isEmpty() || item2.isEmpty()) {
             new AlertDialog.Builder(ActivityTranslation.this)
                     .setTitle("Unvalid card")
-                    .setMessage("At least words in both languages have to be set")
+                    .setMessage("Both the word and its definition have to be set")
                     .setNegativeButton(android.R.string.ok, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
@@ -285,10 +220,23 @@ public class ActivityTranslation extends AppCompatActivity {
         newCard = new Card(item1, item2, Param.INACTIVE, packText.getText().toString(), Utils.giveCurrentDate(), Utils.giveCurrentDate(), 0, 0, 0, Utils.getNewUUID(), -1);
         Utils.manageCardCreation(newCard);
 
+        // Nouvelle recherche : on repart de zéro
+        searchedWord = "";
+        resultText = "";
         initMainTranslationLayout();
         Utils.showToast(ActivityTranslation.this, getString(R.string.toast_msg_new_card_saved));
+    }
 
-        return;
+    // =====================================================================
+    // Divers
+    // =====================================================================
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        View focused = getCurrentFocus();
+        if (imm != null && focused != null) {
+            imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+        }
     }
 
     @Override
@@ -301,7 +249,7 @@ public class ActivityTranslation extends AppCompatActivity {
             finish();
         }
 
-        else if (currentLayoutNum == 2){
+        else if (currentLayoutNum == 2) {
             initMainTranslationLayout();
         }
     }

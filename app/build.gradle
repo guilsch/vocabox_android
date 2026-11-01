@@ -127,4 +127,7 @@ dependencies {
 
     // Lottie animations
     implementation 'com.airbnb.android:lottie:5.2.0'
+
+    //
+    implementation("org.jsoup:jsoup:1.17.2")
 }

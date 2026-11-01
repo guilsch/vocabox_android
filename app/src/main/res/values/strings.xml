@@ -140,4 +140,12 @@
         If you lost your words, please try to import the backup file in the settings (don\'t forget
         to rename it removing the \"_temp\".</string>
 
+    <string name="hint_search_word" translatable="false">Rechercher un mot</string>
+    <string name="content_desc_search" translatable="false">Rechercher</string>
+    <string name="label_etymology" translatable="false">Étymologie</string>
+    <string name="toast_msg_empty_search" translatable="false">Saisis un mot à rechercher.</string>
+    <string name="toast_msg_search_first" translatable="false">Lance d\'abord la recherche (loupe ou touche Entrée).</string>
+    <string name="msg_no_definition" translatable="false">Aucune définition trouvée pour « %1$s » dans le Wiktionnaire.</string>
+    <string name="msg_search_error" translatable="false">Connexion impossible. Vérifie ta connexion Internet.</string>
+
 </resources>

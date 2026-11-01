@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/back_ground"
-    tools:context=".ActivityNewCard">
+    tools:context=".ActivityTranslation">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_layout"
@@ -57,117 +57,100 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
         android:layout_marginHorizontal="@dimen/body_horizontal_margin"
-        android:layout_marginBottom="@dimen/body_bottom_margin"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="@dimen/body_bottom_margin"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_layout">
 
+        <!-- item1 : barre de recherche (le mot dont on veut la définition) -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="4">
-
-<!--            <ImageView-->
-<!--                android:id="@+id/cross_item1"-->
-<!--                android:layout_width="@dimen/ic_cross_size"-->
-<!--                android:layout_height="@dimen/ic_cross_size"-->
-<!--                android:layout_marginEnd="7.5dp"-->
-<!--                android:layout_marginTop="12dp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:srcCompat="@drawable/selector_cross" />-->
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/item1_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:ems="10"
-                android:gravity="top|left"
-                android:inputType="textMultiLine|textImeMultiLine"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_translation_edit_text_on_touch_top"
+                android:hint="@string/hint_search_word"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:minHeight="56dp"
                 android:paddingStart="10dp"
                 android:paddingTop="10dp"
-                android:paddingEnd="40dp"
+                android:paddingEnd="48dp"
                 android:paddingBottom="10dp"
                 android:textColor="@color/navy1"
                 android:textCursorDrawable="@color/navy1"
                 android:textSize="@dimen/titles"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/left_guideline"
-                app:layout_constraintTop_toTopOf="@+id/top_guideline"
-                tools:ignore="MissingConstraints" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/userLanguageFlag"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/top_guideline"
-                app:srcCompat="@drawable/flag_ic_de"
-                tools:ignore="VectorDrawableCompat"
-                app:shapeAppearanceOverlay="@style/Circular" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Loupe : lance la recherche (remplace-la par ton propre drawable si tu veux) -->
+            <ImageView
+                android:id="@+id/search_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/content_desc_search"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:layout_constraintBottom_toBottomOf="@id/item1_text"
+                app:layout_constraintEnd_toEndOf="@id/item1_text"
+                app:layout_constraintTop_toTopOf="@id/item1_text"
+                app:tint="@color/navy1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- item2 : réponse de l'API (définitions + étymologie), en lecture seule -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            <EditText
-                android:id="@+id/item2_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textMultiLine|textImeMultiLine"
-                android:ems="10"
-                android:gravity="top|left"
-                android:paddingStart="10dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="40dp"
-                android:paddingBottom="10dp"
-                android:textColor="@color/navy1"
-                android:textCursorDrawable="@color/navy1"
-                android:textSize="@dimen/titles"
-                app:layout_constraintEnd_toStartOf="@+id/right_guideline"
-                app:layout_constraintStart_toStartOf="@+id/left_guideline"
-                tools:ignore="MissingConstraints" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/targetLanguageFlag"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/bg_translation_edit_text_bottom"
+                android:fillViewport="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/flag_ic_it"
-                tools:ignore="VectorDrawableCompat"
-                app:shapeAppearanceOverlay="@style/Circular" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-<!--            <ImageView-->
-<!--                android:id="@+id/cross_item2"-->
-<!--                android:layout_width="@dimen/ic_cross_size"-->
-<!--                android:layout_height="@dimen/ic_cross_size"-->
-<!--                android:layout_marginEnd="7.5dp"-->
-<!--                android:layout_marginTop="12dp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:srcCompat="@drawable/selector_cross" />-->
+                <TextView
+                    android:id="@+id/item2_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:textColor="@color/navy1"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/titles" />
+            </ScrollView>
+
+            <ProgressBar
+                android:id="@+id/search_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="20dp"
-            android:layout_weight="0">
+            android:paddingVertical="20dp">
 
             <life.sabujak.roundedbutton.RoundedButton
                 android:id="@+id/ok_button"
@@ -180,8 +163,8 @@
                 android:textColor="#ffffff"
                 android:textSize="@dimen/button_std_text_size"
                 android:textStyle="bold"
-                app:buttonCornerRadius="10dp"
                 app:buttonColor="@color/button_std_bg"
+                app:buttonCornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -189,52 +172,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-<!--    <androidx.constraintlayout.widget.Guideline-->
-<!--        android:id="@+id/left_guideline"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="vertical"-->
-<!--        app:layout_constraintGuide_percent="0.18" />-->
-
-<!--    <androidx.constraintlayout.widget.Guideline-->
-<!--        android:id="@+id/right_guideline"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="vertical"-->
-<!--        app:layout_constraintGuide_percent="0.9" />-->
-
-<!--    <androidx.constraintlayout.widget.Guideline-->
-<!--        android:id="@+id/bottom_guideline"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintGuide_percent="0.927" />-->
-
-<!--    <androidx.constraintlayout.widget.Guideline-->
-<!--        android:id="@+id/top_guideline"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintGuide_percent="0.075" />-->
-
-<!--    <androidx.constraintlayout.widget.Guideline-->
-<!--        android:id="@+id/horizontal_middle_central_guideline"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintGuide_percent="0.44" />-->
-
-<!--    <androidx.constraintlayout.widget.Guideline-->
-<!--        android:id="@+id/horizontal_bottom_central_guideline"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintGuide_percent="0.8" />-->
-
-
-
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
