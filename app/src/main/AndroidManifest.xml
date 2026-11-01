@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.guilsch.vocavox">
+    package="com.guilsch.vocabox">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
@@ -24,36 +24,36 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name="com.guilsch.vocavox.ActivityMenu"
+            android:name="com.guilsch.vocabox.ActivityMenu"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityEditCard"
+            android:name="com.guilsch.vocabox.ActivityEditCard"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityNewCard"
+            android:name="com.guilsch.vocabox.ActivityNewCard"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityExplore"
+            android:name="com.guilsch.vocabox.ActivityExplore"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityLearn"
+            android:name="com.guilsch.vocabox.ActivityLearn"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivitySettings"
+            android:name="com.guilsch.vocabox.ActivitySettings"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityTrain"
+            android:name="com.guilsch.vocabox.ActivityTrain"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityTranslation"
+            android:name="com.guilsch.vocabox.ActivityTranslation"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityIntro"
+            android:name="com.guilsch.vocabox.ActivityIntro"
             android:screenOrientation="portrait"
             android:theme="@style/OrangeBothBarsBarTheme"/>
         <activity
-            android:name="com.guilsch.vocavox.ActivityMain"
+            android:name="com.guilsch.vocabox.ActivityMain"
             android:exported="true"
             android:theme="@style/OrangeStatusBarTheme"
             android:screenOrientation="portrait">

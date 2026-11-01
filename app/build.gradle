@@ -9,7 +9,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        applicationId "com.guilsch.vocavox"
+        applicationId "com.guilsch.vocabox"
         minSdkVersion 26
         targetSdkVersion 33
         versionCode 3

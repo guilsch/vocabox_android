@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Vocavox</string>
+    <string name="app_name" translatable="false">Vocabox</string>
 
     <!-- Welcome screen -->
     <string name="choose_language">Please select the language you want to learn:</string>
