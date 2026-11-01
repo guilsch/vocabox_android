@@ -1,5 +1,6 @@
 package com.guilsch.vocabox;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +11,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -25,6 +28,10 @@ public class DictionaryRepository {
             "https://fr.wiktionary.org/w/api.php"
                     + "?action=parse&prop=text&format=json&formatversion=2"
                     + "&redirects=1&disableeditsection=1&page=";
+
+    // Suggestions par préfixe (format OpenSearch) : ["mai", ["mai", "maia", ...], [...], [...]]
+    private static final String SUGGEST_URL =
+            "https://fr.wiktionary.org/w/api.php?action=opensearch&format=json&namespace=0&search=";
 
     // Wikimedia demande un User-Agent identifiable : remplace par le nom de ton app + un contact.
     private static final String USER_AGENT = "Vocabox/1.0 (contact: ton.email@exemple.fr)";
@@ -61,6 +68,25 @@ public class DictionaryRepository {
             }
         }
         return null;
+    }
+
+    /**
+     * Propose des titres de pages du Wiktionnaire commençant par le préfixe saisi.
+     * ⚠️ Réseau : à appeler depuis un thread secondaire.
+     * Les suggestions peuvent contenir des mots d'autres langues (le Wiktionnaire les décrit aussi).
+     */
+    public List<String> suggest(String prefix, int limit) throws IOException {
+        String json = download(SUGGEST_URL + URLEncoder.encode(prefix, "UTF-8") + "&limit=" + limit);
+        try {
+            JSONArray titles = new JSONArray(json).getJSONArray(1);
+            List<String> result = new ArrayList<>();
+            for (int i = 0; i < titles.length(); i++) {
+                result.add(titles.getString(i));
+            }
+            return result;
+        } catch (JSONException e) {
+            throw new IOException("Réponse inattendue du serveur", e);
+        }
     }
 
     private String download(String urlString) throws IOException {

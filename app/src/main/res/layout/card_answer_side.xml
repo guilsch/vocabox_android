@@ -56,15 +56,16 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
         android:layout_marginHorizontal="@dimen/body_horizontal_margin"
-        android:layout_marginBottom="@dimen/body_bottom_margin"
         android:layout_marginTop="0dp"
+        android:layout_marginBottom="@dimen/body_bottom_margin"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_layout">
 
+        <!-- Progression -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -93,70 +94,84 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Carte : le mot (compact) en haut, la définition dessous (défile si elle est longue).
+             height 0dp + weight 1 = la carte prend tout l'espace que les boutons ne prennent pas. -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_card_answer"
-            app:layout_constraintBottom_toTopOf="@+id/horizontal_central_guideline2"
-            app:layout_constraintEnd_toStartOf="@+id/right_guideline"
-            app:layout_constraintStart_toStartOf="@+id/left_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/cards_left">
+            android:background="@drawable/bg_card_answer">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/separation_guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.5" />
-
+            <!-- item1 : le mot, sur une seule ligne avec le haut-parleur -->
             <TextView
                 android:id="@+id/answer_side_item1"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom|center_horizontal"
-                android:padding="15dp"
+                android:gravity="center"
+                android:paddingStart="15dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="10dp"
                 android:text="item1"
                 android:textColor="@color/blue3"
                 android:textSize="@dimen/XXL"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/separation_guideline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/speaker_ic"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="MissingConstraints" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/speaker_ic"
                 android:layout_width="@dimen/ic_size"
                 android:layout_height="@dimen/ic_size"
-                app:layout_constraintBottom_toTopOf="@+id/answer_side_item1"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintBottom_toBottomOf="@+id/answer_side_item1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/answer_side_item1"
+                app:layout_constraintTop_toTopOf="@+id/answer_side_item1"
                 app:srcCompat="@drawable/selector_speaker" />
 
-            <TextView
-                android:id="@+id/answer_side_item2"
+            <!-- Fine ligne de séparation -->
+            <View
+                android:id="@+id/separation_line"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="15dp"
+                android:alpha="0.2"
+                android:background="@color/blue3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/answer_side_item1" />
+
+            <!-- item2 : la définition, dans une zone qui défile -->
+            <androidx.core.widget.NestedScrollView
+                style="@style/NoScrollViewEdgeEffect"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:gravity="center|top"
-                android:padding="15dp"
-                android:text="TextView"
-                android:textColor="@color/blue3"
-                android:textSize="@dimen/XXL"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/separation_guideline"
-                app:layout_constraintVertical_bias="0.441"
-                tools:ignore="MissingConstraints" />
+                app:layout_constraintTop_toBottomOf="@+id/separation_line">
+
+                <TextView
+                    android:id="@+id/answer_side_item2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|top"
+                    android:padding="15dp"
+                    android:text="TextView"
+                    android:textColor="@color/blue3"
+                    android:textSize="@dimen/titles" />
+            </androidx.core.widget.NestedScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Les 4 boutons : toujours visibles en bas, hors de la zone qui défile -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp">
 
             <life.sabujak.roundedbutton.RoundedButton

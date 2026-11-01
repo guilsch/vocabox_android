@@ -4,7 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#E53935</color>
 
-    <color name="main">#C24F25</color>
+    <color name="main">#255FC2</color>
 
     <color name="back_ground">#FAFDFF</color>
     <color name="back_ground2">#F3F2ED</color>
@@ -22,13 +22,13 @@
     <color name="grey5">#F8F8F8</color>
 
 
-    <color name="main_orange1">#ff8500</color>
-    <color name="main_orange2">#ff9100</color>
-    <color name="main_orange3">#ff9e00</color>
-    <color name="main_orange4">#FFC360</color>
-    <color name="main_orange5">#FDCB79</color>
-    <color name="main_orange7">#FFE5BB</color>
-    <color name="main_orange8">#FFF1DB</color>
+    <color name="main_orange1">#133c55</color>
+    <color name="main_orange2">#386fa4</color>
+    <color name="main_orange3">#59a5d8</color>
+    <color name="main_orange4">#84d2f6</color>
+    <color name="main_orange5">#91e5f6</color>
+    <color name="main_orange7">#B9ECF6</color>
+    <color name="main_orange8">#D8F0F4</color>
 
     <color name="sec_blue1">#0077b6</color>
     <color name="sec_blue3">#00b4d8</color>

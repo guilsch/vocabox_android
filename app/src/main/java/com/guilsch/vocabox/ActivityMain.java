@@ -73,21 +73,24 @@ public class ActivityMain extends AppCompatActivity {
         ////// Retrieve preferences variables
         Pref.retrieveAllPreferences(this);
 
-        ////// Setup visuals
-        setContentView(R.layout.activity_main);
+        ////// Load
+        onAutomaticStart();
 
-        start = findViewById(R.id.start);
-        spinner = findViewById(R.id.spinner);
-
-        ////// Manage events
-
-        // Spinner
-        AdapterSpinnerLanguage adapter = new AdapterSpinnerLanguage(this);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(Param.LAST_LANG);
-
-        // Buttons
-        start.setOnClickListener(v -> onStartClick());
+//        ////// Setup visuals
+//        setContentView(R.layout.activity_main);
+//
+//        start = findViewById(R.id.start);
+//        spinner = findViewById(R.id.spinner);
+//
+//        ////// Manage events
+//
+//        // Spinner
+//        AdapterSpinnerLanguage adapter = new AdapterSpinnerLanguage(this);
+//        spinner.setAdapter(adapter);
+//        spinner.setSelection(Param.LAST_LANG);
+//
+//        // Buttons
+//        start.setOnClickListener(v -> onStartClick());
     }
 
     /***
@@ -103,7 +106,7 @@ public class ActivityMain extends AppCompatActivity {
     /**
      * Occurs when the start button has been pressed. Prepares the launch of menuActivity.
      */
-    private void onStartClick() {
+    private void onAutomaticStart() {
 
         // Change layout to loading layout
         transitionToLoadingScreen();
@@ -116,13 +119,37 @@ public class ActivityMain extends AppCompatActivity {
         loadingText.startAnimation(blinkAnim);
 
         // Manage newly selected language
-        Language selectedLanguage = (Language) spinner.getSelectedItem();
+        Language selectedLanguage = Param.TARGET_LANGUAGES_FULL[0];
         Param.TARGET_LANGUAGE = selectedLanguage.getName();
-        Pref.savePreference(this, Param.LAST_LANG_KEY, spinner.getSelectedItemPosition());
+//        Pref.savePreference(this, Param.LAST_LANG_KEY, spinner.getSelectedItemPosition());
 
         // Start the task to prepare data and show loading
         new LoadDataTask().execute();
     }
+
+//    /**
+//     * Occurs when the start button has been pressed. Prepares the launch of menuActivity.
+//     */
+//    private void onStartClick() {
+//
+//        // Change layout to loading layout
+//        transitionToLoadingScreen();
+//
+//        // Get progressBar of the current layout (loading layout)
+//        progressBar = findViewById(R.id.progressBar);
+//        loadingText = findViewById(R.id.loading_text);
+//
+//        Animation blinkAnim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
+//        loadingText.startAnimation(blinkAnim);
+//
+//        // Manage newly selected language
+//        Language selectedLanguage = (Language) spinner.getSelectedItem();
+//        Param.TARGET_LANGUAGE = selectedLanguage.getName();
+//        Pref.savePreference(this, Param.LAST_LANG_KEY, spinner.getSelectedItemPosition());
+//
+//        // Start the task to prepare data and show loading
+//        new LoadDataTask().execute();
+//    }
 
     private void transitionToLoadingScreen() {
         ///// Make transition

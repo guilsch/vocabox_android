@@ -41,7 +41,6 @@ public class ActivityMenu extends AppCompatActivity  {
 
     // frag 2
     private static LinearLayout translationLayout;
-    private static LinearLayout newCardLayout;
     private static LinearLayout exploreLayout;
 
     @Override
@@ -106,7 +105,7 @@ public class ActivityMenu extends AppCompatActivity  {
             settingsIm.setOnClickListener(v -> parentActivity.changeActivity(ActivitySettings.class));
             trainLayout.setOnClickListener(v -> parentActivity.preChangeToTrainActivity());
             learnLayout.setOnClickListener(v -> parentActivity.preChangeToLearnActivity());
-            flag.setOnClickListener(v -> parentActivity.changeActivity(ActivityMain.class));
+//            flag.setOnClickListener(v -> parentActivity.changeActivity(ActivityMain.class));
 
             ObjectAnimator rotateAnimator = ObjectAnimator.ofFloat(menuImageView, View.ROTATION, 0f, 360f);
             rotateAnimator.setDuration(50000);
@@ -114,20 +113,20 @@ public class ActivityMenu extends AppCompatActivity  {
             rotateAnimator.start();
 
             // On touch
-            flag.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            flag.setBorderColor(getContext().getColor(R.color.white));
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            flag.setBorderColor(getContext().getColor(R.color.grey_font));
-                            break;
-                    }
-                    return false;
-                }
-            });
+//            flag.setOnTouchListener(new View.OnTouchListener() {
+//                @Override
+//                public boolean onTouch(View v, MotionEvent event) {
+//                    switch (event.getAction()) {
+//                        case MotionEvent.ACTION_DOWN:
+//                            flag.setBorderColor(getContext().getColor(R.color.white));
+//                            break;
+//                        case MotionEvent.ACTION_UP:
+//                            flag.setBorderColor(getContext().getColor(R.color.grey_font));
+//                            break;
+//                    }
+//                    return false;
+//                }
+//            });
 
             return view;
         }
@@ -148,11 +147,9 @@ public class ActivityMenu extends AppCompatActivity  {
             ActivityMenu parentActivity = (ActivityMenu) getActivity();
 
             translationLayout = view.findViewById(R.id.translation_layout);
-            newCardLayout = view.findViewById(R.id.new_card_layout);
             exploreLayout = view.findViewById(R.id.explore_layout);
 
             translationLayout.setOnClickListener(v -> parentActivity.preChangeToTranslationActivity());
-            newCardLayout.setOnClickListener(v -> parentActivity.changeActivity(ActivityNewCard.class));
             exploreLayout.setOnClickListener(v -> parentActivity.changeActivity(ActivityExplore.class));
 
             return view;

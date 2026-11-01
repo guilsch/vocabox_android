@@ -135,6 +135,22 @@
                     android:textSize="@dimen/titles" />
             </ScrollView>
 
+            <!-- Suggestions de mots, affichées par-dessus la zone de réponse, juste sous la barre -->
+            <ListView
+                android:id="@+id/suggestions_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_translation_edit_text_bottom"
+                android:divider="@null"
+                android:elevation="4dp"
+                android:visibility="gone"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0" />
+
             <ProgressBar
                 android:id="@+id/search_progress"
                 android:layout_width="wrap_content"

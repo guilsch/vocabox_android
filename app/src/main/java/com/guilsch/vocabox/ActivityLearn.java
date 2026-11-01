@@ -10,13 +10,10 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.kofigyan.stateprogressbar.StateProgressBar;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,29 +24,16 @@ import java.util.concurrent.Executors;
 import life.sabujak.roundedbutton.RoundedButton;
 
 /**
- * This class is the activity corresponding to the learning activity
+ * This class is the activity corresponding to the learning activity.
+ *
+ * Flow : the user selects the cards (words and their definitions) to learn, then goes directly
+ * to the evaluation (question side, answer side, quality from 1 to 4).
  *
  * @author Guilhem Schena
  */
 public class ActivityLearn extends AppCompatActivity implements View.OnClickListener {
 
     private RoundedButton mStartLearningButton;
-
-    private TextView mTextViewItem1Step1;
-    private TextView mTextViewItem2Step1;
-    private RoundedButton mNextCardButtonStep1;
-
-    private RoundedButton mSeeAnswerButtonStep2;
-    private TextView mTextViewQuestionStep2;
-    private TextView mTextViewAnswerStep2;
-    private RoundedButton mAnswerRightButtonStep2;
-    private RoundedButton mAnswerWrongButtonStep2;
-
-    private Button mStartStep1Button;
-    private Button mSkipStep1Button;
-    private Button mStartStep2Button;
-    private Button mSkipStep2Button;
-    private Button mStartStep3Button;
 
     private ImageView speaker;
 
@@ -64,14 +48,13 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
 
     private RoundedButton mBackToMenuRevisionButton;
 
-    private StateProgressBar mStepsProgressBar;
-
     ListView cardsSelectionList;
 
     private Card currentCard;
-    private static Queue<Card> learningCardsQueue1;
-    private static Queue<Card> learningCardsQueue2;
-    private static Queue<Card> learningCardsQueue3;
+    // Cards ticked on the selection screen (also used by the selection adapter)
+    private static Queue<Card> selectedCardsQueue;
+    // Cards to evaluate. A card rated 1 is put back at the end of this queue
+    private Queue<Card> learningCardsQueue;
     private Queue<Card> processedCardsQueue;
     private List<Card> toLearnCardsList;
 
@@ -95,9 +78,8 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
 
         // Initialize variables
-        learningCardsQueue1 = new LinkedList<>();
-        learningCardsQueue2 = new LinkedList<>();
-        learningCardsQueue3 = new LinkedList<>();
+        selectedCardsQueue = new LinkedList<>();
+        learningCardsQueue = new LinkedList<>();
         processedCardsQueue = new LinkedList<>();
 
         toLearnCardsList = Param.GLOBAL_DECK.getCardsToLearnList();
@@ -135,12 +117,6 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
 
         } else if (v == mBackToMenuRevisionButton) {
             onBackPressed();
-
-        } else if (v == mAnswerRightButtonStep2) {
-            scrollCardsStep2(Boolean.TRUE);
-
-        } else if (v == mAnswerWrongButtonStep2) {
-            scrollCardsStep2(Boolean.FALSE);
         }
 
         else {
@@ -148,51 +124,14 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
         }
     }
 
-
-
-    private void scrollCardsStep1() {
-        // Add current card to the next queue if it has already be shown
-        if (currentCard != null) {
-            learningCardsQueue2.add(currentCard);
-        }
-
-        currentCard = learningCardsQueue1.poll();
-
-        if (currentCard != null) {
-            // Show new card
-            setLayoutStep1QuestionSide();
-        }
-        else {
-            setLayoutTransition1to2();
-        }
-    }
-
-    private void scrollCardsStep2(Boolean rightAnswer) {
-        // Add card to the next queue if answer is correct, add it to the end of the current queue
-        // if not
-        if (rightAnswer & currentCard != null) {
-            learningCardsQueue3.add(currentCard);
-        } else if (!rightAnswer & currentCard != null) {
-            learningCardsQueue2.add(currentCard);
-        }
-
-        // Next card
-        currentCard = learningCardsQueue2.poll();
-
-        if (currentCard != null) {
-            // Show new card
-            setLayoutStep2QuestionSide();
-        }
-        else {
-            setLayoutTransition2to3();
-        }
-    }
-
     /**
      * Occurs after the user gave an answer. Manage the score given by the user for the current
      * card. Mark the card active and calculate the new training date thanks to SuperMemo algorithm.
      * Add the current card to the processed cards queue only if the card is not repeated (ie score
-     * not 1). Else remains in the learningCardsQueue3 queue.
+     * not 1). Else remains in the learningCardsQueue queue.
+     *
+     * When currentCard is null (start of the training), there is no answer to record : the method
+     * only shows the first card.
      *
      * @param quality 1 to 4, quality of the answer given by the user
      */
@@ -212,12 +151,12 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
                 processedCardsQueue.add(currentCard);
 
             } else {
-                learningCardsQueue3.add(currentCard);
+                learningCardsQueue.add(currentCard);
             }
         }
 
         // Next card
-        currentCard = learningCardsQueue3.poll();
+        currentCard = learningCardsQueue.poll();
 
         if (currentCard != null) {
             // Show new card
@@ -264,131 +203,31 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
         });
     }
 
+    /**
+     * Occurs when the user starts the training from the cards selection. The old steps 1 and 2
+     * have been removed : the selected cards go directly to the evaluation.
+     */
     private void onStartLearningButton() {
-        resetLearningCardsQueue1();
-        setLayoutTransition0to1();
+        resetSelectionFlags();
+
+        learningCardsQueue.clear();
+        learningCardsQueue.addAll(selectedCardsQueue);
+        processedCardsQueue.clear();
+        cardsNBInit = learningCardsQueue.size();
+
+        // No card shown yet : scrollCardsStep3 only polls and shows the first card
+        currentCard = null;
+        scrollCardsStep3(0);
     }
 
-    private void resetLearningCardsQueue1() {
-        for (Card card:learningCardsQueue1){
+    /**
+     * Unmark the selected cards (the selection screen starts clean next time). The cards stay in
+     * the selection queue.
+     */
+    private void resetSelectionFlags() {
+        for (Card card : selectedCardsQueue) {
             card.setIsSelected(false);
         }
-    }
-
-    private void setLayoutStep1QuestionSide() {
-        setContentView(R.layout.activity_learn_step1);
-
-        mTextViewItem1Step1 = findViewById(R.id.answer_side_item1);
-        mTextViewItem2Step1 = findViewById(R.id.answer_side_item2);
-        mNextCardButtonStep1 = findViewById(R.id.next_card_button_step1);
-        backLayout = findViewById(R.id.back_layout);
-        speaker = findViewById(R.id.speaker_ic);
-
-
-        // Pronunciation
-        textToSpeech.speak(currentCard.getItem2(), TextToSpeech.QUEUE_FLUSH, null, null);
-        speaker.setOnClickListener(v -> textToSpeech.speak(currentCard.getItem2(),
-                TextToSpeech.QUEUE_FLUSH, null, null));
-
-
-        backLayout.setOnClickListener(v -> onBackToSelectionPressed());
-
-        mNextCardButtonStep1.setOnClickListener(v -> scrollCardsStep1());
-        mTextViewItem1Step1.setText(this.currentCard.getItem1());
-        mTextViewItem2Step1.setText(this.currentCard.getItem2());
-    }
-
-    private void setLayoutStep2QuestionSide() {
-        setContentView(R.layout.activity_learn_step2_question_side);
-
-        // Initialization
-        mTextViewQuestionStep2 = findViewById(R.id.question_side_item1_step2);
-        mSeeAnswerButtonStep2 = findViewById(R.id.see_answer_button_step2);
-        backLayout = findViewById(R.id.back_layout);
-
-        // Use
-        mSeeAnswerButtonStep2.setOnClickListener(v -> setLayoutStep2AnswerSide());
-        mTextViewQuestionStep2.setText(this.currentCard.getItem2());
-        backLayout.setOnClickListener(v -> onBackToSelectionPressed());
-    }
-
-    private void setLayoutStep2AnswerSide() {
-        setContentView(R.layout.activity_learn_step2_answer_side);
-        backLayout = findViewById(R.id.back_layout);
-        speaker = findViewById(R.id.speaker_ic);
-        backLayout.setOnClickListener(v -> onBackToSelectionPressed());
-
-        // Initialization
-        mTextViewAnswerStep2 = findViewById(R.id.answer_side_item2);
-        mTextViewQuestionStep2 = findViewById(R.id.answer_side_item1);
-        mAnswerRightButtonStep2 = findViewById(R.id.right_answer_button_step2);
-        mAnswerWrongButtonStep2 = findViewById(R.id.answer_side_button1);
-
-        // Use
-        mAnswerRightButtonStep2.setOnClickListener(this);
-        mAnswerWrongButtonStep2.setOnClickListener(this);
-        mTextViewQuestionStep2.setText(this.currentCard.getItem1());
-        mTextViewAnswerStep2.setText(this.currentCard.getItem2());
-
-        // Pronunciation
-        textToSpeech.speak(currentCard.getItem2(), TextToSpeech.QUEUE_FLUSH, null, null);
-        speaker.setOnClickListener(v -> textToSpeech.speak(currentCard.getItem2(),
-                TextToSpeech.QUEUE_FLUSH, null, null));
-    }
-
-    private void setLayoutTransition0to1() {
-        setContentView(R.layout.activity_learn_transition_0_to_1_layout);
-
-        backLayout = findViewById(R.id.back_layout);
-        backLayout.setOnClickListener(v -> onBackToSelectionPressed());
-
-        mStartStep1Button = findViewById(R.id.start_step3_button);
-        mSkipStep1Button = findViewById(R.id.skip_btn);
-
-        manageStepsProgressBar();
-
-        mStartStep1Button.setOnClickListener(v -> {
-            scrollCardsStep1();
-        });
-        mSkipStep1Button.setOnClickListener(v -> {
-            learningCardsQueue2.addAll(learningCardsQueue1);
-            setLayoutTransition1to2();
-        });
-    }
-
-    private void setLayoutTransition1to2() {
-        setContentView(R.layout.activity_learn_transition_1_to_2_layout);
-
-        backLayout = findViewById(R.id.back_layout);
-        backLayout.setOnClickListener(v -> onBackToSelectionPressed());
-
-        manageStepsProgressBar();
-
-        mStartStep2Button = findViewById(R.id.start_button);
-        mSkipStep2Button = findViewById(R.id.skip_btn);
-
-        mStartStep2Button.setOnClickListener(v -> {
-            scrollCardsStep2(Boolean.FALSE);
-        });
-        mSkipStep2Button.setOnClickListener(v -> {
-            learningCardsQueue3.addAll(learningCardsQueue2);
-            setLayoutTransition2to3();
-        });
-    }
-
-    private void setLayoutTransition2to3() {
-        setContentView(R.layout.activity_learn_transition_2_to_3_layout);
-
-        backLayout = findViewById(R.id.back_layout);
-        backLayout.setOnClickListener(v -> onBackToSelectionPressed());
-
-        cardsNBInit = learningCardsQueue3.size();
-        manageStepsProgressBar();
-
-        mStartStep3Button = findViewById(R.id.start_button);
-        mStartStep3Button.setOnClickListener(v -> {
-            scrollCardsStep3(0);
-        });
     }
 
     /**
@@ -415,8 +254,6 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
 
         cardsLeftText = findViewById(R.id.cards_left);
 
-//        mStepsProgressBar.findViewById(R.id.remaining_cards_progress_bar);
-
         mTextViewQuestionStep3 = findViewById(R.id.question_side_item1);
         mSeeAnswerButtonStep3 = findViewById(R.id.question_side_button);
 
@@ -437,7 +274,6 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
         backLayout.setOnClickListener(v -> onBackToSelectionPressed());
 
         cardsLeftText = findViewById(R.id.cards_left);
-//        mStepsProgressBar.findViewById(R.id.remaining_cards_progress_bar);
 
         mTextViewAnswerStep3Item1 = findViewById(R.id.answer_side_item1);
         mTextViewAnswerStep3Item2 = findViewById(R.id.answer_side_item2);
@@ -476,43 +312,35 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
 
     /**
      * When the card is selected, addLearningQueue(card) is called in the CardsSelectionListAdapter.
-     * This method adds the card selected in the learning queue.
+     * This method adds the card selected in the selection queue.
      *
      * @param card Card selected to be learned
      */
     public static void addToLearningQueue(Card card) {
         System.out.println(card.getItem1() + " is added");
-        learningCardsQueue1.add(card);
+        selectedCardsQueue.add(card);
     }
 
     /**
      * When the card is unselected, removeFromLearningQueue(card) is called in the
-     * CardsSelectionListAdapter. This method removes the card selected from the learning queue.
+     * CardsSelectionListAdapter. This method removes the card selected from the selection queue.
      *
      * @param card Card selected to be removed
      */
     public static void removeFromLearningQueue(Card card) {
         System.out.println(card.getItem1() + " is removed");
-        learningCardsQueue1.remove(card);
+        selectedCardsQueue.remove(card);
     }
 
     /**
      * learningQueueContains(card) is called in the CardsSelectionListAdapter to check if a
-     * particular card is currently in the learning queue.
+     * particular card is currently selected.
      *
-     * @param card Card selected to check if it is in the learning queue.
+     * @param card Card selected to check if it is in the selection queue.
      */
     public static Boolean learningQueueContains(Card card) {
-        Boolean contains = learningCardsQueue1.contains(card);
+        Boolean contains = selectedCardsQueue.contains(card);
         return contains;
-    }
-
-    /**
-     * Init and manage parameters of the progress bar in the transitions layout for each step
-     */
-    private void manageStepsProgressBar() {
-        mStepsProgressBar = findViewById(R.id.stepsProgressBar);
-        mStepsProgressBar.setAnimationDuration(2000);
     }
 
     private void onBackToSelectionPressed() {
@@ -521,7 +349,7 @@ public class ActivityLearn extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onBackPressed() {
-        resetLearningCardsQueue1();
+        resetSelectionFlags();
 
         Utils.threadShutdown(singleThreadExecutor);
 

@@ -5,7 +5,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.os.Bundle;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -14,10 +13,9 @@ import java.util.Date;
 public class ActivityEditCard extends AppCompatActivity {
 
     private TextView saveCardButton;
-//    private TextView deleteCardButton;
-    private EditText item1Text;
-    private EditText item2Text;
-    private EditText packText;
+    //    private TextView deleteCardButton;
+    private EditText item1Text;          // le mot
+    private EditText item2Text;          // la définition
     private TextView nextDateText;
     private TextView nextDateSentence;
     private TextView creationDateText;
@@ -27,9 +25,6 @@ public class ActivityEditCard extends AppCompatActivity {
     private RadioButton radioButton1;
     private RadioButton radioButton2;
     private RadioButton radioButton3;
-
-    private ImageView targetLanguageFlag;
-    private ImageView userLanguageFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +41,12 @@ public class ActivityEditCard extends AppCompatActivity {
 //        deleteCardButton = findViewById(R.id.delete_card_button);
         item1Text = findViewById(R.id.item1_text);
         item2Text = findViewById(R.id.item2_text);
-        packText = findViewById(R.id.pack_text);
         nextDateText = findViewById(R.id.next_date_text);
         nextDateSentence = findViewById(R.id.next_date_sentence);
         creationDateText = findViewById(R.id.creation_date_text);
-        targetLanguageFlag = findViewById(R.id.targetLanguageFlag);
-        userLanguageFlag = findViewById(R.id.userLanguageFlag);
 
-        targetLanguageFlag.setImageDrawable(Param.FLAG_ICON_TARGET);
-        userLanguageFlag.setImageDrawable(Param.FLAG_ICON_USER);
         item1Text.setText(card.getItem1());
         item2Text.setText(card.getItem2());
-        packText.setText(card.getPack());
         creationDateText.setText(Utils.universalToLocalDate(card.getCreationDate().toString(), Param.USER_LANGUAGE_ISO));
         manageDateOrNowMessage(card.getNextPracticeDate());
 
@@ -119,7 +108,7 @@ public class ActivityEditCard extends AppCompatActivity {
 
         card.setItem1(item1Text.getText().toString());
         card.setItem2(item2Text.getText().toString());
-        card.setPack(packText.getText().toString());
+        // Le pack n'est plus modifié ici : la carte garde celui qu'elle avait déjà.
         Utils.updateInDatabaseOnSeparateThreadOneShot(card);
 
 
