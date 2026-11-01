@@ -1,0 +1,33 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Vocavox" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/main_orange1</item>
+        <item name="colorPrimaryVariant">@color/main_orange3</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/sec_blue1</item>
+        <item name="colorSecondaryVariant">@color/sec_blue3</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/back_ground</item>
+        <item name="android:navigationBarColor">@color/back_ground</item>
+        <item name="android:windowLightStatusBar">true</item>
+<!--        <item name="android:windowLightNavigationBar">true</item>-->
+
+        <!-- Customize your theme here. -->
+        <item name="fontFamily">@font/oxygen</item>
+        <item name="android:colorEdgeEffect">@color/selected_color_transparent</item>
+    </style>
+
+    <style name="OrangeStatusBarTheme" parent="Theme.Vocavox">
+        <item name="android:statusBarColor">@color/main_orange1</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="OrangeBothBarsBarTheme" parent="Theme.Vocavox">
+        <item name="android:statusBarColor">@color/main_orange1</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/main_orange1</item>
+    </style>
+</resources>

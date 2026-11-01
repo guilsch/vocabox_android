@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Margins -->
+    <dimen name="body_horizontal_margin">30dp</dimen>
+    <dimen name="body_bottom_margin">30dp</dimen>
+    <dimen name="body_top_margin">10dp</dimen>
+
+    <!-- menu-->
+    <dimen name="menu_cases_height">75dp</dimen>
+
+    <!-- Header size -->
+    <dimen name="header_height">50dp</dimen>
+
+    <!-- Search view size -->
+    <dimen name="search_view_height">40dp</dimen>
+
+    <!-- Icon size -->
+    <dimen name="ic_size">20dp</dimen>
+    <dimen name="ic_bg_size">25dp</dimen>
+
+    <!--    Activity edit-->
+    <dimen name="radio_button_state_stroke_size">0dp</dimen>
+
+    <!--    dialogs-->
+    <dimen name="dialog_padding_size">15dp</dimen>
+
+    <!--    buttons-->
+    <dimen name="button_std_width">100dp</dimen>
+    <dimen name="button_std_height">50dp</dimen>
+
+    <dimen name="button_ans_width">60dp</dimen>
+    <dimen name="button_ans_height">40dp</dimen>
+
+<!--    Intro-->
+    <dimen name="ic_arrow_size">40dp</dimen>
+</resources>

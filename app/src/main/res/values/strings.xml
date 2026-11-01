@@ -1,0 +1,143 @@
+<resources>
+    <string name="app_name" translatable="false">Vocavox</string>
+
+    <!-- Welcome screen -->
+    <string name="choose_language">Please select the language you want to learn:</string>
+    <string name="welcome_msg">Welcome</string>
+
+    <!-- Question Answer Sides  -->
+    <string name="revision_header">Training</string>
+
+    <!-- Finished screens -->
+    <string name="end_train">End of training !</string>
+    <string name="end_learn">End of learning !</string>
+
+    <!-- Menu -->
+
+    <string name="menu_train_title_str">Train</string>
+    <string name="menu_learn_title_str">Learn</string>
+    <string name="menu_new_card_title_str">New Card</string>
+    <string name="menu_translate_title_str">Translate</string>
+    <string name="menu_explore_title_str">Explore</string>
+
+    <string name="menu_add_cards_title">Add cards</string>
+    <string name="menu_others_title">Others</string>
+
+    <string name="toast_msg_no_connexion">You must have an Internet connection to translate</string>
+
+
+    <!-- New Card !-->
+    <string name="pack">Pack</string>
+    <string name="save_card">Save</string>
+    <string name="card_state">Current state</string>
+    <string name="toast_msg_invalid_new_card">Words in both languages have to be set</string>
+    <string name="toast_msg_new_card_saved">The card has been saved!</string>
+
+    <!--Edit Card !-->
+    <string name="edit_card_date_sentence_now">This card must be reviewed \u00A0</string>
+    <string name="edit_card_date_word_now">now</string>
+    <string name="edit_card_date_sentence_on_the">Next training on \u00A0</string>
+    <string name="edit_card_date_creation_sentence">Card created on \\u00A0</string>
+
+    <!-- Start !-->
+    <string name="start_button">Start</string>
+
+    <!-- Translation !-->
+    <string name="toast_msg_empty_translation">Translation is empty</string>
+
+    <!--  Explore !-->
+    <string name="no_cards_in_list">No card</string>
+
+    <!-- Settings   -->
+    <string name="lang_direction_freq_setting">Language direction frequency :</string>
+    <string name="setting_play_speech">Automatic pronounciation of words :</string>
+    <string name="setting_import_title">Import data file</string>
+    <string name="setting_export_title">Export data file</string>
+    <string name="setting_reset_title">Reset data file</string>
+
+    <string name="setting_file_title">Data files</string>
+    <string name="setting_training_title">Training</string>
+
+    <!-- Learn   -->
+    <string name="learn_select_cards_msg_str">Select the cards to learn :</string>
+
+    <string name="transition01_question">Ready for step 1?</string>
+    <string name="transition12_question">Ready for step 2?</string>
+    <string name="transition23_question">Ready for step 3?</string>
+
+    <string name="transition01_text">Try to remember the translation of the words</string>
+    <string name="transition12_text">Try to guess the translation of the words</string>
+    <string name="transition23_text">Time for evaluation ! Try to remember each word and assess your memory</string>
+
+    <!-- Buttons   -->
+    <string name="button_save">Save</string>
+
+    <!-- First Time  -->
+
+    <!-- Toasts   -->
+    <string name="toast_msg_no_cards_to_learn">No cards to learn...</string>
+    <string name="toast_msg_no_cards_to_train">No cards to train...</string>
+
+    <string name="toast_msg_data_file_imported">The import is done!</string>
+    <string name="toast_msg_data_import_copy_failed">Import failed, please try again</string>
+    <string name="toast_msg_data_import_wrong_file_name">File selected has a wrong name, please change it or pick another file. The file to be imported must match the current learning language</string>
+    <string name="toast_msg_data_error">Error, please try again</string>
+
+    <string name="toast_msg_data_file_exported">The export to the download folder is done!</string>
+    <string name="toast_msg_data_export_copy_failed">Export failed, please try again</string>
+    <string name="toast_msg_data_export_no_file_found">No data file found, make sure file exists</string>
+
+    <string name="toast_msg_data_delete_success">Reset done!</string>
+    <string name="toast_msg_data_delete_failed">Deletion error, please try again</string>
+    <string name="toast_msg_data_delete_no_file_found">No file found</string>
+
+
+    <!-- Other -->
+    <string name="button_back_home">Home</string>
+    <string name="button_back_str">Back</string>
+
+    <!-- Dialog delete card -->
+    <string name="dialog_delete_card_title_str">Do you really want to delete this card ?</string>
+    <string name="text_button_delete_str">Delete</string>
+    <string name="text_button_cancel_str">Cancel</string>
+
+    <!-- Dialog delete data file -->
+    <string name="dialog_delete_data_file_title_str">Do you really want to delete all the data for this language? Data can\'t be retrieved.</string>
+
+    <!-- Dialog sort -->
+    <string name="dialog_sort_alphabetical_str">Alphabetical</string>
+    <string name="dialog_sort_creation_date_str">Creation date</string>
+    <string name="dialog_sort_training_date_str">Next training date</string>
+
+    <!--    Dialog quit learning-->
+    <string name="dialog_quit_learning_title_str">Do you really want to quit the training?</string>
+    <string name="text_button_quit_learning">Quit</string>
+
+    <!--    // Dialog-->
+    <string name="text_button_import">Import</string>
+    <string name="dialog_import_title_str">The data file picked will be imported in the application and will overwrite file previously imported with the same name. Do you really want to import a new data file?</string>
+
+    <!--    Loading screen-->
+    <string name="loading_text">Loading...</string>
+
+    <!--    Default hint -->
+    <string name="hint_optional">Optional</string>
+
+    <!--    Intro activity-->
+    <string name="intro_title_step1">Step 1</string>
+    <string name="intro_title_step2">Step 2</string>
+    <string name="intro_title_step3">Step 3</string>
+    <string name="intro_title_step4">Step 4</string>
+
+    <string name="intro_text_step1">Add some cards to learn manually or with the translation functionality</string>
+    <string name="intro_text_step2">You can also import an Excel file with words in it (export the file first to see the sheet format)</string>
+    <string name="intro_text_step3">Learn the words you want!</string>
+    <string name="intro_text_step4">When it\'s time, train the words learnt</string>
+
+<!--    datafile error-->
+    <string name="data_file_error_msg">An error occurred when importing the data file which could be
+        corrupted. A backup file and the corrupted file have been copied to the download folder.
+        If you lost your words, please try to import the backup file in the settings (don\'t forget
+        to rename it removing the \"_temp\".</string>
+
+</resources>

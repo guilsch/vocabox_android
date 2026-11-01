@@ -1,0 +1,130 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
+
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        applicationId "com.guilsch.vocavox"
+        minSdkVersion 26
+        targetSdkVersion 33
+        versionCode 3
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude("META-INF/*.kotlin_module")
+        exclude 'META-INF/INDEX.LIST'
+        exclude 'project.properties'
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'org.jetbrains:annotations:15.0'
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation 'androidx.viewpager:viewpager:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation 'org.apache.poi:poi:3.9'
+    implementation 'org.apache.poi:poi-ooxml:3.9'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // External storage permissions
+    implementation "com.github.permissions-dispatcher:permissionsdispatcher:4.8.0"
+    annotationProcessor "com.github.permissions-dispatcher:permissionsdispatcher-processor:4.8.0"
+
+    //mesahdan version
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation('com.google.http-client:google-http-client-gson:1.26.0') {
+        exclude group: 'org.apache.http.legacy.boot.jar'
+    }
+    implementation('com.google.api-client:google-api-client-android:1.26.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+
+    // Google Translate
+    implementation('com.google.cloud:google-cloud-translate:1.12.0') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude group: 'org.json', module: 'json'
+    }
+    annotationProcessor 'com.google.cloud:google-cloud-translate:1.12.0'
+
+    // Translation API
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+
+    // Progress bar
+    implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
+
+    // Buttons
+    implementation 'com.github.sabujak-sabujak:RoundedButton:v0.1.1'
+
+    // Edit svg
+    implementation 'com.caverock:androidsvg:1.4'
+
+    // Circular image
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // File explorer
+    implementation 'com.github.salehyarahmadi:FileAndFolderPicker:1.0.4'
+
+    // Page indicator
+    implementation 'com.pacioianu.david:ink-page-indicator:1.3.0'
+
+    // Rounded images
+    implementation 'com.google.android.material:material:1.6.0'
+    //  Makes error : Cannot access androidx.savedstate.SavedStateRegistryOwner
+    // 1.6.7 other error
+
+    // Seekbar
+    implementation 'org.adw.library:discrete-seekbar:1.0.1'
+
+    // File utils
+    implementation 'androidx.activity:activity:1.3.0'
+
+    // Loading
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+
+    // Lottie animations
+    implementation 'com.airbnb.android:lottie:5.2.0'
+}

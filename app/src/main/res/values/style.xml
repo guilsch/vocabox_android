@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner.DropDown">
+        <item name="android:background">@drawable/bg_spinner_custom</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
+
+    <!-- Rounded image styles -->
+    <style name="Circular">
+        <item name="cornerSize">50%</item>
+    </style>
+
+
+    <!--    Scroll view-->
+    <style name="NoScrollViewEdgeEffect">
+        <item name="android:overScrollMode">never</item>
+        <item name="android:fadingEdgeLength">0dp</item>
+    </style>
+</resources>
